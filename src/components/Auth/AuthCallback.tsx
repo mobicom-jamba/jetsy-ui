@@ -15,10 +15,6 @@ export default function AuthCallback() {
   );
   const [message, setMessage] = useState("");
 
-  useEffect(() => {
-    handleCallback();
-  }, [searchParams]);
-
   const handleCallback = async () => {
     const connected = searchParams.get("connected");
     const error = searchParams.get("error");
@@ -35,23 +31,23 @@ export default function AuthCallback() {
     if (connected === "true") {
       setStatus("success");
       setMessage("Meta account connected successfully!");
-
-      // Refresh user data to get updated Meta accounts
       try {
         await refreshUser();
       } catch (err) {
         console.error("Failed to refresh user data:", err);
       }
-
       setTimeout(() => {
         router.push("/dashboard");
       }, 2000);
       return;
     }
 
-    // If no specific status, redirect to dashboard
     router.push("/dashboard");
   };
+
+  useEffect(() => {
+    handleCallback();
+  }, [searchParams, handleCallback]);
 
   const getErrorMessage = (error: string) => {
     switch (error) {

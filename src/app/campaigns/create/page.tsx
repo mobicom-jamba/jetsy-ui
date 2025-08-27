@@ -6,7 +6,7 @@ import CampaignWizard from "@/components/Campaigns/CampaignWizard";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
 export default function CreateCampaignPage() {
   const { user, loading } = useAuth();

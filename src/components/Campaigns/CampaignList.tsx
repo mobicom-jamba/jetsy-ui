@@ -48,7 +48,7 @@ import {
   Eye,
 } from "lucide-react";
 import Link from "next/link";
-import { formatCurrency, formatDate, getStatusColor } from "@/lib/utils";
+import { formatCurrency, formatDate } from "@/lib/utils";
 import BulkActions from "./BulkActions";
 import ConnectMeta from "@/components/Auth/ConnectMeta";
 

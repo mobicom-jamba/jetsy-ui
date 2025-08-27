@@ -87,7 +87,7 @@ const BEHAVIORS = [
   { id: "6003808923983", name: "Small business owners" },
 ];
 
-export default function TargetingStep({ errors }: TargetingStepProps) {
+export default function TargetingStep() {
   const { setValue, watch } = useFormContext();
   const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
 
@@ -99,7 +99,6 @@ export default function TargetingStep({ errors }: TargetingStepProps) {
     locations = ["US"],
     interests = [],
     behaviors = [],
-    customAudiences = [],
   } = targeting;
 
   const handleLocationToggle = (countryCode: string, checked: boolean) => {

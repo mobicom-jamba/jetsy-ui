@@ -30,8 +30,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-  LineChart,
-  Line,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -57,7 +55,6 @@ import {
   Copy,
   BarChart3,
   Users,
-  MapPin,
   ArrowLeft,
   Plus,
 } from "lucide-react";

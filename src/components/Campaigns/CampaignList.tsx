@@ -123,8 +123,6 @@ export default function CampaignList() {
           </Link>
         </Button>
       </div>
-
-      {/* Filters */}
       <Card>
         <CardContent className="pt-6">
           <div className="flex items-center space-x-4">

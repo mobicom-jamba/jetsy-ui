@@ -1,7 +1,6 @@
-// app/campaigns/create/page.tsx
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/hooks/useAuthContext";
 import MainLayout from "@/components/Layout/MainLayout";
@@ -27,12 +26,32 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { useMetaAccounts, useConnectMetaAccount } from "@/hooks/useAccounts";
-import React from "react";
+
+/** ✅ Tiny component that uses useSearchParams, wrapped in Suspense below */
+function OAuthRefetch({ refetch }: { refetch: () => void }) {
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const cameFromOAuth =
+      typeof window !== "undefined" &&
+      localStorage.getItem("metaConnectInProgress");
+
+    const hasOAuthParams = ["connected", "code", "state"].some(
+      (k) => !!searchParams.get(k)
+    );
+
+    if (cameFromOAuth || hasOAuthParams) {
+      refetch();
+      localStorage.removeItem("metaConnectInProgress");
+    }
+  }, [refetch, searchParams]);
+
+  return null; // it’s only for the side-effect
+}
 
 export default function CreateCampaignPage() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
-  const searchParams = useSearchParams();
 
   useEffect(() => {
     if (!authLoading && !user) router.push("/login");
@@ -45,23 +64,6 @@ export default function CreateCampaignPage() {
   } = useMetaAccounts();
 
   const connectMeta = useConnectMetaAccount();
-
-  // 👇 One-time refetch after coming back from OAuth
-  useEffect(() => {
-    const cameFromOAuth =
-      typeof window !== "undefined" &&
-      localStorage.getItem("metaConnectInProgress");
-    const hasOAuthParams =
-      !!searchParams.get("connected") ||
-      !!searchParams.get("code") ||
-      !!searchParams.get("state");
-
-    if (cameFromOAuth || hasOAuthParams) {
-      refetch(); // force pull latest
-      localStorage.removeItem("metaConnectInProgress");
-    }
-  }, [searchParams, refetch]);
-
   const hasConnectedAccount = Array.isArray(accounts) && accounts.length > 0;
 
   if (authLoading || accountsLoading) {
@@ -76,6 +78,11 @@ export default function CreateCampaignPage() {
 
   return (
     <MainLayout>
+      {/* ✅ Suspense boundary specifically for the searchParams usage */}
+      <Suspense fallback={null}>
+        <OAuthRefetch refetch={refetch} />
+      </Suspense>
+
       <div className="max-w-4xl mx-auto space-y-6">
         <div className="text-center space-y-2">
           <h1 className="text-3xl font-bold tracking-tight">
@@ -100,11 +107,6 @@ export default function CreateCampaignPage() {
   );
 }
 
-/* … keep your NoAccountGuard / StepRow / CopyButton / Skeleton exactly as-is … */
-
-/* =========================
-   Guard: No Meta Account
-   ========================= */
 function NoAccountGuard({
   onConnect,
   connecting,

@@ -1,8 +1,8 @@
-// app/campaigns/create/page.tsx (or client/src/pages/campaigns/create.tsx depending on your setup)
+// app/campaigns/create/page.tsx
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/hooks/useAuthContext";
 import MainLayout from "@/components/Layout/MainLayout";
 import CampaignWizard from "@/components/Campaigns/CampaignWizard";
@@ -19,7 +19,6 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import {
-  Facebook,
   Plug,
   Shield,
   AlertTriangle,
@@ -27,31 +26,44 @@ import {
   RefreshCw,
   ExternalLink,
 } from "lucide-react";
-
 import { useMetaAccounts, useConnectMetaAccount } from "@/hooks/useAccounts";
 import React from "react";
 
 export default function CreateCampaignPage() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   useEffect(() => {
-    if (!authLoading && !user) {
-      router.push("/login");
-    }
+    if (!authLoading && !user) router.push("/login");
   }, [user, authLoading, router]);
 
-  // Accounts fetch
   const {
     data: accounts,
     isLoading: accountsLoading,
     refetch,
   } = useMetaAccounts();
+
   const connectMeta = useConnectMetaAccount();
 
-  const hasConnectedAccount = (accounts?.length ?? 0) > 0;
+  // 👇 One-time refetch after coming back from OAuth
+  useEffect(() => {
+    const cameFromOAuth =
+      typeof window !== "undefined" &&
+      localStorage.getItem("metaConnectInProgress");
+    const hasOAuthParams =
+      !!searchParams.get("connected") ||
+      !!searchParams.get("code") ||
+      !!searchParams.get("state");
 
-  // Loading skeletons while auth or accounts fetch in-flight
+    if (cameFromOAuth || hasOAuthParams) {
+      refetch(); // force pull latest
+      localStorage.removeItem("metaConnectInProgress");
+    }
+  }, [searchParams, refetch]);
+
+  const hasConnectedAccount = Array.isArray(accounts) && accounts.length > 0;
+
   if (authLoading || accountsLoading) {
     return (
       <MainLayout>
@@ -60,7 +72,6 @@ export default function CreateCampaignPage() {
     );
   }
 
-  // If unauthenticated, component will unmount after redirect
   if (!user) return null;
 
   return (
@@ -75,19 +86,21 @@ export default function CreateCampaignPage() {
           </p>
         </div>
 
-        {!hasConnectedAccount ? (
+        {hasConnectedAccount ? (
+          <CampaignWizard />
+        ) : (
           <NoAccountGuard
             onConnect={() => connectMeta.mutate()}
             connecting={connectMeta.isPending}
             onRefresh={() => refetch()}
           />
-        ) : (
-          <CampaignWizard />
         )}
       </div>
     </MainLayout>
   );
 }
+
+/* … keep your NoAccountGuard / StepRow / CopyButton / Skeleton exactly as-is … */
 
 /* =========================
    Guard: No Meta Account

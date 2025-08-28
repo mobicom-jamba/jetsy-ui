@@ -47,7 +47,6 @@ export default function LoginFormShadcn() {
       const errorMessage =
         error.message || "Invalid email or password. Please try again.";
 
-      // Check if it's a specific field validation error
       if (error.response?.data?.details) {
         error.response.data.details.forEach((detail: any) => {
           if (detail.field === "email") {
@@ -57,7 +56,6 @@ export default function LoginFormShadcn() {
           }
         });
       } else {
-        // Show general error in alert
         setLoginError(errorMessage);
       }
     } finally {
@@ -81,7 +79,6 @@ export default function LoginFormShadcn() {
 
       <CardContent className="space-y-6">
         <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
-          {/* Email Field */}
           <div className="space-y-2">
             <Label htmlFor="email">Email address</Label>
             <div className="relative">
@@ -95,7 +92,7 @@ export default function LoginFormShadcn() {
                   },
                 })}
                 type="email"
-                placeholder="you@example.com"
+                placeholder="Enter your email account"
                 className="pl-10"
                 disabled={loading}
               />
@@ -158,16 +155,6 @@ export default function LoginFormShadcn() {
             className="text-primary hover:underline font-medium transition-colors"
           >
             Create account
-          </Link>
-        </div>
-
-        {/* Forgot Password */}
-        <div className="text-center">
-          <Link
-            href="/forgot-password"
-            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-          >
-            Forgot your password?
           </Link>
         </div>
       </CardContent>

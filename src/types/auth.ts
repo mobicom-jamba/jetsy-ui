@@ -15,6 +15,7 @@ export interface User {
 }
 
 export interface MetaApp {
+  businessConfigEnabled: any;
   id: string;
   appId: string;
   appName: string;

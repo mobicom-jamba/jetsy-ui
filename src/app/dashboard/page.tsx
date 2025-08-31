@@ -5,6 +5,7 @@ import MainLayout from "@/components/Layout/MainLayout";
 import DashboardOverview from "@/components/Dashboard/DashboardOverview";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import FacebookConnect from "@/components/Facebook/FacebookConnect";
 
 export default function DashboardPage() {
   const { user, loading } = useAuth();
@@ -28,7 +29,8 @@ export default function DashboardPage() {
 
   return (
     <MainLayout>
-      <DashboardOverview />
+      <FacebookConnect />
+      {/* <DashboardOverview /> */}
     </MainLayout>
   );
 }
